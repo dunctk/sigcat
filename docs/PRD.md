@@ -1,6 +1,6 @@
 # SigCat — Product Requirements Document
 
-**Version:** 1.0 (planning baseline)  
+**Version:** 1.1 (planning baseline; ADS-B integration extension)  
 **Date:** 2026-10-19  
 **Status:** Proposed; no implementation or validated device support yet  
 **Product:** SigCat — local-first, open-source radio signal observatory  
@@ -96,6 +96,7 @@ A checked acceptance test, reproducible hardware/software manifest, documented f
 | P0 | Offline VAD and STT on user-provided authorised audio | local model fixture |
 | P0 | Restricted LAN and Tailscale Serve documentation | independent device test |
 | P1 | Expanded protocol adapters, speech translation and model benchmarking | RF audio benchmark |
+| P1 | Passive PiAware Beast ingestion and local aircraft history; optional managed feeder profile | Existing feeder remains unaffected; explicit site/MLAT validation before migration |
 | P1 | Multi-SDR workers and scan orchestration | multiple-device test |
 | P1 | Per-rule notifications, user bookmarks and custom classification | deterministic tests |
 | P1 | JSON/CSV/SigMF exports and stable read-only API | contract tests |
@@ -206,6 +207,23 @@ Canonical decode envelope:
 - source_hash, confidence_if_meaningful, error_if_any
 
 Do not automatically send aircraft, vessel, telemetry or location data to external aggregation networks.
+
+### Optional PiAware / FlightAware integration (P1)
+
+**Detailed implementation spec:** [PiAware, SkyAware & FlightAware interoperability](INTEGRATIONS/flightaware-piaware.md).
+
+SigCat shall support the operator's existing 1090 MHz ADS-B receiving stack without requiring a second receiver or competing for the RTL-SDR. **First implement a passive Beast TCP client** that reads the output of an existing `dump1090-fa` or verified `readsb` decoder (commonly TCP 30005). PiAware must continue uploading the same decoded stream to FlightAware and SkyAware must remain available until the operator explicitly migrates.
+
+- The existing ADS-B decoder owns the SDR. **SigCat must not open or retune that physical receiver** while the decoder is active; generic FutureSDR scanning requires a separate SDR or deliberately suspends ADS-B with an explicit warning.
+- Decode and validate Beast frames with provenance. Provide local aircraft list/map, time/frequency/search history, aircraft lifecycle and receiver/connectivity diagnostics without cloud API dependencies.
+- Preserve the operator's FlightAware site `feeder-id` and verify the official FlightAware site after a later, explicit migration. **Complimentary Enterprise benefits belong to FlightAware and depend on qualifying active contribution; SigCat cannot guarantee entitlement.**
+- An optional second phase shall offer a *single SigCat-managed Compose project* consisting of one ADS-B decoder, PiAware feeder and SigCat UI. This is one receiver/decoder and one managed deployment, **not one executable process**.
+- FlightAware upload is an **explicitly enabled external-sharing exception** to SigCat's normal local-only behavior; never enable upstream sharing, MLAT data consumption or third-party aircraft APIs by default.
+- Preserve the integrity of raw Beast timestamps if needed for PiAware/MLAT; never reconstruct timestamped messages from SQLite observations and pass them off as raw feed.
+- Treat FlightAware-supplied MLAT and any enriched/proprietary data distinctly from local ADS-B observations; no undocumented redistribution.
+- Provide a compact feed health indicator but distinguish decoder data received, PiAware connected, FlightAware site verified and account entitlement. Do not infer upstream success from TCP stream activity.
+
+**Delivery gates:** ADS-01 read-only Beast ingestion; ADS-02 local aircraft timeline/map/search; ADS-03 feeder diagnostic states; ADS-04 optional managed deployment with feeder-ID-preserving rollback; ADS-05 on-site FlightAware and MLAT verification. Track these as P1, not blockers to the baseline SDR MVP.
 
 ## 9. Authorised audio, speech recognition and translation
 
@@ -524,6 +542,9 @@ Authoritative integration docs (check again at implementation time):
 - SigMF — https://sigmf.org/
 - SQLite FTS5 — https://www.sqlite.org/fts5.html
 - Tailscale Serve — https://tailscale.com/docs/features/tailscale-serve
+- FlightAware ADS-B share benefit — https://www.flightaware.com/adsb/
+- PiAware official software — https://github.com/flightaware/piaware
+- FlightAware feeder ID migration — https://support.flightaware.com/hc/en-us/articles/33379001938583-How-Do-I-Claim-The-FlightFeeder-Site-number-UID-and-Feeder-History-From-An-Old-PiAware
 
 **Implementation verification gates:** pin exact upstream commits; re-check licences separately for every package/model; verify platform/ISA support, model runtime and throughput on actual host; document provenance and measurements. Any numerical benchmark in vendor documentation is not a SigCat benchmark.
 
