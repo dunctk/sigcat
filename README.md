@@ -1,5 +1,9 @@
 # SigCat 🐈 📡
 
+<p align="center">
+  <img src="assets/sigcat-logo.png" alt="SigCat logo — a cat formed from a radio spectrum waveform" width="256">
+</p>
+
 **Local-first, open-source radio signal discovery and analysis.**
 
 SigCat aims to turn permitted radio-frequency activity into a **searchable history of observations**: live spectrum, automatic activity detection, measured signal characteristics, verified protocol decodes, selected recordings, and optionally local speech transcription and translation.
