@@ -93,25 +93,22 @@ The intended service maps internal TCP 8080 to host **127.0.0.1:8080** by defaul
 
 At 2.4 MS/s and 8-bit I/Q, raw IQ is approximately **17.28 GB per hour** (decimal GB) before overhead. SigCat therefore plans to keep compact observation records and short, deliberate IQ/audio clips instead of recording an endless stream of RF noise. Quotas and retention will be enforced automatically and pinned events protected.
 
-## Development roadmap
+## Implementation progress
 
-- [ ] **M0 — feasibility:** real RTL-SDR + SoapySDR/Seify + FutureSDR in a minimally privileged Linux container; FFT, sample-loss test, and CPU-only Parakeet fixture.
-- [ ] **M1 — foundation:** Rust workspace, builds, Compose, auth, receiver scheduling, live spectrum, demo/replay, local/Tailscale docs.
-- [ ] **M2 — observations:** scanning, real coverage intervals, detection, SQLite schema, dense event UI, FTS5, selective SigMF capture.
-- [ ] **M3 — intelligence:** rtl_433 plugin, authorised local VAD/ASR, queue and provenance, searchable transcripts; translation after separate validation.
-- [ ] **M4 — hardening:** retention/backup, disk-full and unplug recovery, RF speech Pareto testing, extra receiver/decoder compatibility.
+**[Live implementation tracker →](docs/IMPLEMENTATION.md)** — the canonical task statuses, blockers, evidence and next action. As of 2026-10-19, M0 feasibility is not yet validated. See [PRD §17](docs/PRD.md#17-milestones-and-implementation-sequence) for requirements and milestone exit gates.
 
-See [PRD §17](docs/PRD.md#17-milestones-and-implementation-sequence) for milestone gates, acceptance scenarios and dependencies.
+Milestones: **M0 feasibility → M1 receiver/web foundation → M2 discovery/storage/search → M3 decoding/offline speech → M4 hardening**. Each checkbox in the tracker requires reproducible evidence; planned features are not represented as shipped.
 
 ## Contributor / coding-agent entry points
 
 **Read these in order:**
 
-1. [docs/PRD.md](docs/PRD.md) — source of truth for requirements, non-goals, interfaces and acceptance.
-2. [AGENTS.md](AGENTS.md) — hard engineering rules, scope gates, test practices and code structure.
-3. Once implementation begins, repository-local ADRs, module README files, and tests.
+1. [AGENTS.md](AGENTS.md) — agent operating rules, architecture boundaries, testing and handoffs.
+2. [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md) — **current status**, stable task IDs, verified evidence, blockers and next action.
+3. [docs/PRD.md](docs/PRD.md) — requirements, non-goals, interfaces and milestone acceptance criteria.
+4. When relevant, ADRs, module README files, fixtures and tests.
 
-When implementing a feature, attach a reproducible acceptance test or an explicit manual hardware test, update the roadmap, and call out actual measured support rather than assuming it works based on upstream documentation.
+For every coding session, select a task ID, verify the acceptance criteria, and update the tracker with evidence and the next task before finishing. Do not call unverified SDR hardware or model support “done.”
 
 ## Architecture and model research
 
