@@ -11,6 +11,7 @@
 | Current milestone | **M0 — Feasibility** |
 | Next task | **M0-01** — document reference hardware + reproducible test environment |
 | Critical path | SoapySDR/Seify inside unprivileged Linux Docker → FutureSDR IQ/FFT → verified CPU local ASR → go/no-go ADR |
+| Optional ADS-B track | **ADS-01** → ADS-02 → ADS-03 → ADS-04 → ADS-05 (P1; do not interrupt existing PiAware) |
 | Blocking external dependency | Real Linux host + RTL-SDR required to verify physical-device support; replay tests can run without it |
 | Overall state | **Not started** (documentation alone is not implementation) |
 | Last reviewed | 2026-10-19 |
@@ -60,6 +61,18 @@
 - [ ] **M4-02 — Backups and exports.** Consistent SQLite/media backup/restore, JSON/CSV/SigMF exports with provenance. **Evidence:** pending.
 - [ ] **M4-03 — Security, soak and remote validation.** Auth/CSRF/sandbox tests; measured 24h SDR soak, two-device tailnet test and documented limitations. **Evidence:** pending.
 - [ ] **M4-04 — Hardware and model expansion (P1/P2).** ARM64 and additional SDRs/backends only after independent validation. **Evidence:** pending.
+
+## ADS — PiAware / SkyAware / FlightAware (optional P1 workstream)
+
+**Requirements and migration design:** [PiAware & FlightAware integration](INTEGRATIONS/flightaware-piaware.md). This is a separate optional workstream, **not** a prerequisite for M0–M3 or a reason to interrupt the existing FlightAware feed. Initial connection is passive/read-only and can start once a minimal data/web pathway exists.
+
+- [ ] **ADS-01 — Read-only Beast integration.** Configure an existing PiAware/dump1090-fa/readsb source, connect to Beast TCP (usually 30005), validate frames, reconnect safely, record signal provenance and never claim the USB SDR. **Evidence:** pending.
+- [ ] **ADS-02 — Local aircraft view and history.** Aircraft list/map, stale-aircraft expiry, deduplicated Mode S/ADS-B messages, source-labelled local tracks and SQLite history/search. **Evidence:** pending.
+- [ ] **ADS-03 — Feeder health visibility.** Separate raw feed connected, decoder active, PiAware upstream connection and externally verified FlightAware-site status. Never assert the complimentary account entitlement from local packets. **Evidence:** pending.
+- [ ] **ADS-04 — Optional managed Compose profile.** One SDR and one ADS-B decoder serving PiAware and SigCat, preserved durable `feeder-id`, explicit opt-in external uploads, opt-in cutover, MLAT timing considerations, testable rollback. **Evidence:** pending.
+- [ ] **ADS-05 — Real cutover validation.** Verify the existing FlightAware site retains identity/contribution and MLAT health (where enabled), plus a documented two-client local ADS-B display and restart/fault recovery on real host. **Evidence:** pending.
+
+**Gate:** do not mark ADS-04/ADS-05 done based only on mocks, test fixtures, local decoder message counts or connected process health. An operator must verify actual FlightAware site statistics and any relevant account benefits through FlightAware.
 
 ## Task lifecycle and agent handoff
 
