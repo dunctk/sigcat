@@ -4,6 +4,19 @@
 
 **Current repository status (2026-10-19): documentation only.** Do not claim Docker deployment, radio support, speech models or UI works until implementation and evidence exist. The MIT licence covers only SigCat's original source; dependencies and model weights retain their own terms.
 
+## Required implementation tracking workflow
+
+**Every coding agent, on every task:**
+
+1. Read [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md) **before writing code**. This is the only authoritative source for task state, blockers, and next action; the PRD is requirements authority, not a progress tracker.
+2. Choose a stable task ID from the tracker (e.g. `M0-02`), read its PRD acceptance criteria, and mark the task `In progress` without checking its box. If something is blocked, document the exact unblock condition instead of silently changing task order.
+3. Implement a small, testable vertical slice. Capture commands, test results, device/model versions, and an evidence link.
+4. **Before finishing or opening a PR:** update that task in the tracker. Only set `[x]` when verified evidence is linked. Explicitly distinguish mocked/synthetic/replay tests from physical RTL-SDR hardware evidence.
+5. Update the tracker’s **At a glance / Next task** and decision log. Keep the README a high-level reflection, not a competing second checklist. Link the task ID and status update in the pull request.
+6. Do not mark an entire milestone complete until every mandatory exit gate passes. If needed, document a blocker or ADR instead.
+
+This process applies even when a session changes only one small feature, and applies to work on `main` as well as pull requests. Documentation-only changes that do not implement a task may simply note “no implementation status change”; do not fabricate progress. Never delete unchecked work to inflate completion.
+
 ## 1. Mission and non-negotiables
 
 Build a **local-first, receive-only RF observatory** that can run unattended on a Linux box and be controlled securely from a browser on localhost, LAN or via tailnet-only Tailscale Serve. Optimize the **whole signal-to-structured-information pipeline**: capture → detection → conservative classification → optional verified decode → optional authorised speech → compact, searchable evidence.
@@ -197,7 +210,7 @@ Every nontrivial change should include appropriate tests and update docs:
 
 ## 13. First tasks for the coding agent
 
-1. Read PRD §5–6, §9, §14–18 and this file.
+1. Read this file, docs/IMPLEMENTATION.md (start with M0-01), then PRD §5–6, §9, §14–18.
 2. Make a minimal, runnable **M0** Rust spike with one SoapySDR/Seify RTL-SDR input + FutureSDR FFT **and** a deterministic file/dummy fallback; no UI polish yet.
 3. Containerize without privileged mode; document exact Ubuntu/Debian host USB driver setup and test result.
 4. Add measured sample-rate, drop and resource diagnostics.
