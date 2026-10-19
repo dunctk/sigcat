@@ -20,6 +20,7 @@ Designed to run **headlessly on a Linux box** with an RTL-SDR or other compatibl
 - **Investigate:** open a detailed event, examine its measurements and provenance, replay selected SigMF IQ or audio, annotate and export.
 - **Listen locally where authorised:** VAD, offline ASR and optional translation via swappable model backends; model benchmarking on real RF audio.
 - **Self-host privately:** Docker Compose on Linux, Axum/HTMX browser UI, loopback by default, optional LAN access, and Tailscale Serve for tailnet-only HTTPS.
+- **Optional aircraft mode:** ingest the existing PiAware/dump1090 ADS-B Beast feed, show local aircraft history, and keep contributing to FlightAware without another 1090 MHz receiver or ADS-B decoder.
 
 SigCat is a **receive-only** project. It does not transmit, bypass encryption or access controls, promise to decode every signal, or grant permission to capture private communications. Audio recording and transcription are planned to be **off by default** and require operator authorisation.
 
@@ -88,6 +89,16 @@ The planned workflow, **not runnable until M1 has shipped**, is:
 The intended service maps internal TCP 8080 to host **127.0.0.1:8080** by default. Enabling LAN binding is an opt-in change that must be paired with appropriate authentication and network security. Tailnet access does not replace SigCat authentication.
 
 **Do not run an arbitrary Compose command copied from an issue until actual Compose files and release instructions exist.**
+
+## Planned PiAware / FlightAware integration
+
+**[Integration requirements and safe migration plan →](docs/INTEGRATIONS/flightaware-piaware.md)**
+
+If you're already feeding FlightAware with PiAware/SkyAware, SigCat's first ADS-B integration will **read the existing Beast data feed (typically TCP 30005)** without taking the RTL-SDR away from dump1090-fa or disrupting the feeder. The same decoder feeds PiAware and SigCat.
+
+Later, an optional Docker Compose profile will manage the decoder, PiAware uploader and SigCat together: **one installation, one ADS-B decoder, one 1090 MHz SDR and SigCat as the primary interface**. It will preserve the existing feeder identity with an explicit, reversible cutover. FlightAware account benefits depend on active valid contributions and FlightAware policies, not on SigCat itself.
+
+**Status: planned (ADS-01–ADS-05); not implemented.** A dedicated ADS-B receiver cannot also continuously scan unrelated RF bands. Uploading to FlightAware is an operator-enabled exception to local-only defaults.
 
 ## Why event-based storage?
 
